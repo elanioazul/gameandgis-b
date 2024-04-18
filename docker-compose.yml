@@ -1,8 +1,8 @@
 version: "3.8"
 services:
-  gameandgis-pg:
+  gameandgis-b-pg:
     image: postgres:latest
-    container_name: gameandgis-pg
+    container_name: gameandgis-b-pg
     restart: always
     env_file: .env
     environment:
