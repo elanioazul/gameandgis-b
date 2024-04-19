@@ -11,3 +11,42 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - 5434:${DATABASE_PORT}
+  gameandgis-b-production:
+    container_name: gameandgis-b-api-production
+    build:
+      target: production
+      context: .
+      args:
+        - PORT=${NEST_PORT}
+    ports:
+      - 5002:${NEST_PORT}
+  gameandgis-b-dev:
+    container_name: gameandgis-b-api-dev
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_HOST: gameandgis-b-postgres
+      DATABASE_PORT: ${DATABASE_PORT}
+    build:
+      target: dev
+      context: .
+      args:
+        - PORT=${NEST_PORT}
+    #entrypoint: ["npm", "run", "start:dev"]
+    ports:
+      - 5002:${NEST_PORT}
+      - 9229:9229 #debuggin port
+    volumes:
+      - .:/gameandgis-b-app
+      - node_modules:/gameandgis-b-app/node_modules/
+    command: npm run start:debug # override entry command
+    depends_on:
+      - gameandgis-b-postgres
+    links:
+      - gameandgis-b-postgres
+volumes:
+  node_modules: null
+  docker-nest-postgres: null
