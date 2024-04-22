@@ -69,6 +69,8 @@ export class AuthenticationService {
     );
     return {
       accessToken,
+      token_type: 'Bearer',
+      expires_in: this.jwtConfiguration.accessTokenTtl,
     };
   }
 }
