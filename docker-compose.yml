@@ -39,14 +39,14 @@ services:
     ports:
       - 5002:${NEST_PORT}
       - 9229:9229 #debuggin port
-    volumes:
-      - .:/gameandgis-b-app
-      - node_modules:/gameandgis-b-app/node_modules/
+    # volumes:
+    #   - .:/gameandgis-b-app
+    #   - node_modules:/gameandgis-b-app/node_modules/
     command: npm run start:debug # override entry command
     depends_on:
       - gameandgis-b-postgres
     links:
       - gameandgis-b-postgres
-volumes:
-  node_modules: null
-  docker-nest-postgres: null
+# volumes:
+#   node_modules: null
+#   docker-nest-postgres: null
