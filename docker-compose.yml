@@ -1,5 +1,12 @@
 version: "3.8"
 services:
+  gameandgis-b-redis:
+    image: redis
+    container_name: gameandgis-b-redis
+    restart: always
+    env_file: .env
+    ports:
+      - "6380:${REDIS_PORT}"
   gameandgis-b-postgres:
     image: postgres:latest
     container_name: gameandgis-b-postgres
@@ -45,8 +52,10 @@ services:
     command: npm run start:debug # override entry command
     depends_on:
       - gameandgis-b-postgres
+      - gameandgis-b-redis
     links:
       - gameandgis-b-postgres
+      - gameandgis-b-redis
 # volumes:
 #   node_modules: null
 #   docker-nest-postgres: null
