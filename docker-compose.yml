@@ -18,6 +18,8 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - 5434:${DATABASE_PORT}
+    volumes:
+      - gameandgis-pg-vol:/var/lib/postgresql/data
   gameandgis-b-production:
     container_name: gameandgis-b-api-production
     build:
@@ -56,6 +58,6 @@ services:
     links:
       - gameandgis-b-postgres
       - gameandgis-b-redis
-# volumes:
-#   node_modules: null
-#   docker-nest-postgres: null
+volumes:
+  gameandgis-pg-vol:
+    driver: local
