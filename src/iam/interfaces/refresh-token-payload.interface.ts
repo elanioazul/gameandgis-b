@@ -1,4 +1,5 @@
 export interface RefreshTokenPayload {
   refreshTokenId?: string;
-  email?: string
+  email?: string;
+  roles?: string[];
 }

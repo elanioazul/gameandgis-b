@@ -20,6 +20,7 @@ import { RedisRepository } from 'src/infrastructure/redis/repository/redis.repos
 import { randomUUID } from 'crypto';
 import { RefreshTokenPayload } from '../interfaces/refresh-token-payload.interface';
 import { InvalidatedRefreshTokenError } from '../models/refresh-token.error';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -30,6 +31,7 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     @Inject(RedisRepository) private readonly redisRepository: RedisRepository,
+    private readonly userService: UsersService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -38,7 +40,8 @@ export class AuthenticationService {
       user.email = signUpDto.email;
       user.password = await this.hashingService.hash(signUpDto.password);
 
-      await this.usersRepository.save(user);
+      await this.userService.createUser(user);
+      //await this.usersRepository.save(user);
     } catch (err) {
       const pgUniqueViolationErrorCode = EnumPgErrorCodes.unique_violation;
       if (err.code === pgUniqueViolationErrorCode) {
@@ -49,8 +52,9 @@ export class AuthenticationService {
   }
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.usersRepository.findOneBy({
-      email: signInDto.email,
+    const user = await this.usersRepository.findOne({
+      where: { email: signInDto.email },
+      relations: ['roles'], // Ensure roles are included
     });
     if (!user) {
       throw new UnauthorizedException('User does not exists');
@@ -70,6 +74,7 @@ export class AuthenticationService {
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken(user.id, this.jwtConfiguration.accessTokenTtl, {
         email: user.email,
+        roles: user.roles?.map((role) => role.name) ?? [], // nullish coalescing
       }),
       this.signToken(user.id, this.jwtConfiguration.refreshTokenTtl, {
         refreshTokenId,
@@ -117,7 +122,7 @@ export class AuthenticationService {
   private async signToken(
     userId: number,
     expiresIn: number,
-    payload?: RefreshTokenPayload,
+    payload?: Partial<ActiveUserData> | RefreshTokenPayload,
   ) {
     return await this.jwtService.signAsync(
       {

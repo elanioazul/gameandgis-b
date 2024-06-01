@@ -5,14 +5,19 @@ import { SignInDto } from './dto/sign-in.dto/sign-in.dto';
 import { AuthType } from './enums/auth-type.enum';
 import { Auth } from './decorators/auth.decorator';
 import { RefreshTokenDto } from './dto/refresh-token.dto/refresh-token.dto';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Auth(AuthType.None)
 @Controller('authentication')
 export class AuthenticationController {
-  constructor(private readonly authService: AuthenticationService) {}
+  constructor(
+    private readonly authService: AuthenticationService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Post('sign-up')
-  signUp(@Body() signUpDto: SignUpDto) {
+  async signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.signUp(signUpDto);
   }
 

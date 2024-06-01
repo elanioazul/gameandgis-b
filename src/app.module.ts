@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { IamModule } from './iam/iam.module';
 import { ConfigModule } from '@nestjs/config';
 import { RedisModule } from './infrastructure/redis/redis.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -22,9 +23,12 @@ import { RedisModule } from './infrastructure/redis/redis.module';
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      // logging: true,
+      // logger: 'advanced-console',
     }),
     IamModule,
     RedisModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
