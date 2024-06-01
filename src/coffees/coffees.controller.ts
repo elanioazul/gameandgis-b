@@ -12,6 +12,8 @@ import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { ActiveUser } from 'src/iam/decorators/active-user.decorator';
 import { ActiveUserData } from 'src/iam/interfaces/active-user-data.interface';
+import { Roles } from 'src/iam/authorization/decorators/roles.decorator';
+import { RolesEnum } from 'src/roles/enums/roles.enum';
 
 @Controller('coffees')
 export class CoffeesController {
@@ -22,6 +24,7 @@ export class CoffeesController {
     return this.coffeesService.create(createCoffeeDto);
   }
 
+  @Roles({ name: RolesEnum.REGULAR })
   @Get()
   findAll(@ActiveUser() user: ActiveUserData) {
     console.log(user);
@@ -29,6 +32,7 @@ export class CoffeesController {
     return this.coffeesService.findAll();
   }
 
+  @Roles({ name: RolesEnum.GESTOR })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coffeesService.findOne(+id);
