@@ -14,7 +14,7 @@ export class Roleseeder implements OnModuleInit {
   }
 
   async seed() {
-    const roles = ['regular', 'admin']; // Add other roles as needed
+    const roles = ['regular', 'gestor', 'admin'];
     for (const roleName of roles) {
       const role = await this.roleRepository.findOne({
         where: { name: roleName },

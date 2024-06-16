@@ -1,9 +1,11 @@
+import { RoleRequest } from 'src/roles/entities/role-request.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,4 +23,7 @@ export class User {
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable()
   roles: Role[];
+
+  @OneToMany(() => RoleRequest, (roleRequest) => roleRequest.user)
+  roleRequests: RoleRequest[];
 }

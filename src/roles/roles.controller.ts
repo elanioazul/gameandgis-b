@@ -1,7 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { RequestRoleUpgradeDto, UpdateRoleDto } from './dto/update-role.dto';
+import { ActiveUserData } from 'src/iam/interfaces/active-user-data.interface';
+import { ActiveUser } from 'src/iam/decorators/active-user.decorator';
+import { RolesEnum } from './enums/roles.enum';
+import { Roles } from 'src/iam/authorization/decorators/roles.decorator';
 
 @Controller('roles')
 export class RolesController {
@@ -30,5 +42,25 @@ export class RolesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.rolesService.remove(+id);
+  }
+
+  @Post('request-role')
+  async requestRoleUpgrade(
+    @ActiveUser() user: ActiveUserData,
+    @Body() requestRoleUpgradeDto: RequestRoleUpgradeDto,
+  ) {
+    return this.rolesService.requestRoleUpgrade(
+      user.email,
+      requestRoleUpgradeDto.role,
+    );
+  }
+
+  @Patch('role-requests/:id')
+  @Roles({ name: RolesEnum.ADMIN })
+  async handleRoleRequest(
+    @Param('id') requestId: number,
+    @Body('approve') approve: boolean,
+  ) {
+    return this.rolesService.handleRoleRequest(requestId, approve);
   }
 }
