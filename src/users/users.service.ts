@@ -16,8 +16,8 @@ export class UsersService {
     private readonly roleRepository: Repository<Role>,
   ) {}
   async createUser(signUpDto: SignUpDto): Promise<User> {
-    const { email, password } = signUpDto;
-    const user = this.userRepository.create({ email, password });
+    const { name, email, password } = signUpDto;
+    const user = this.userRepository.create({ name, email, password });
 
     const regularRole = await this.roleRepository.findOne({
       where: { name: 'regular' },

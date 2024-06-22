@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
+import { BrevoService } from 'src/providers/services/transactional-emails/brevo/brevo.service';
 @Injectable()
 export class RolesService {
   constructor(
@@ -15,6 +16,7 @@ export class RolesService {
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private emailServie: BrevoService,
   ) {}
 
   create(createRoleDto: CreateRoleDto) {
@@ -53,6 +55,16 @@ export class RolesService {
       requestedRole,
       status: 'pending',
     });
+
+    const admin = await this.userRepository.findOne({
+      where: { email: 'hugo2023dev@gmail.com' }, //habría que buscar tbn por user que tenga role=3(admin)
+    });
+    if (admin) {
+      this.emailServie.notifyAdminNewRoleRequest(admin);
+    } else {
+      console.log('no admin was found');
+    }
+    this.emailServie.notifyUserRequestIsPending(user, admin);
 
     return await this.roleRequestRepository.save(roleRequest);
   }
@@ -97,6 +109,19 @@ export class RolesService {
           // );
 
           await this.roleRequestRepository.manager.save(roleRequest.user);
+
+          //send notification email
+          const admin = await this.userRepository.findOne({
+            where: { email: 'hugo2023dev@gmail.com' }, //habría que buscar tbn por user que tenga role=3(admin)
+          });
+          if (admin) {
+            this.emailServie.notifyUserRequestIsApproved(
+              roleRequest.user,
+              admin,
+            );
+          } else {
+            console.log('no admin was found');
+          }
         } else {
           console.log('Role already exists in user roles');
         }
