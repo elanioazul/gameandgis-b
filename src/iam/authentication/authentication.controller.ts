@@ -6,7 +6,6 @@ import { AuthType } from './enums/auth-type.enum';
 import { Auth } from './decorators/auth.decorator';
 import { RefreshTokenDto } from './dto/refresh-token.dto/refresh-token.dto';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
 
 @Auth(AuthType.None)
 @Controller('authentication')

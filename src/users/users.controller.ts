@@ -10,6 +10,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ActiveUser } from 'src/iam/decorators/active-user.decorator';
+import { ActiveUserData } from 'src/iam/interfaces/active-user-data.interface';
+import { ResetPasswordDto } from 'src/iam/authentication/dto/reset-password.dto/reset-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -20,6 +23,14 @@ export class UsersController {
   // create(@Body() createUserDto: CreateUserDto) {
   //   return this.usersService.createUser(createUserDto);
   // }
+
+  @Post('reset-password')
+  resetPassword(
+    @ActiveUser() user: ActiveUserData,
+    @Body() dto: ResetPasswordDto,
+  ) {
+    return this.usersService.resetPassowrd(user.email, dto);
+  }
 
   @Get()
   findAll() {
