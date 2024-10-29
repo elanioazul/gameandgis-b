@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,6 +31,14 @@ export class UsersController {
     @Body() dto: ResetPasswordDto,
   ) {
     return this.usersService.resetPassowrd(user.email, dto);
+  }
+
+  @Put(':id/avatar/:avatarId')
+  async updateUserAvatar(
+    @ActiveUser() user: ActiveUserData,
+    @Param('avatarId') avatarId: number,
+  ) {
+    return this.usersService.updateUserAvatar(user.email, avatarId);
   }
 
   @Get()
