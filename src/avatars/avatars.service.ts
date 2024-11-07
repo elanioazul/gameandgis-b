@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAvatarDto } from './dto/create-avatar.dto';
 import { Repository } from 'typeorm';
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,36 +10,6 @@ export class AvatarsService {
     @InjectRepository(Avatar)
     private readonly avatarRepository: Repository<Avatar>,
   ) {}
-  async create(
-    avatarFiletDto: CreateAvatarDto,
-    multerFile: Express.Multer.File,
-    isTheDefault: boolean,
-  ) {
-    const {
-      originalname,
-      encoding,
-      mimetype,
-      destination,
-      filename,
-      path,
-      size,
-    } = multerFile;
-
-    const file = this.avatarRepository.create({
-      originalname,
-      filename,
-      path,
-      mimetype,
-      size,
-      isTheDefault,
-    });
-    return this.avatarRepository.save(file);
-  }
-
-  async getDefaultAvatar(): Promise<Avatar> {
-    // Assuming the default avatar is known and can be retrieved by specific criteria
-    return this.avatarRepository.findOne({ where: { isTheDefault: true } });
-  }
 
   findAll() {
     return `This action returns all avatars`;

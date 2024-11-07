@@ -1,4 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateAvatarDto } from './create-avatar.dto';
+import { Multer } from 'multer';
+import { IsNumber, IsOptional } from 'class-validator';
 
-export class UpdateAvatarDto extends PartialType(CreateAvatarDto) {}
+export class UpdateAvatarDto {
+  @IsOptional()
+  @IsNumber()
+  avatarId?: number; // For selecting a predefined avatar (marieta)
+
+  @IsOptional()
+  file?: Multer['single']; // For custom uploaded by the user
+}

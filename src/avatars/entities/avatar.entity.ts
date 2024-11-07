@@ -32,6 +32,9 @@ export class Avatar {
   @Column()
   isTheDefault: boolean;
 
+  @Column()
+  isCustom: boolean; //los de marieta serán custom, los que sube el user no
+
   @OneToMany(() => User, (user) => user.avatar)
   users: User[];
 

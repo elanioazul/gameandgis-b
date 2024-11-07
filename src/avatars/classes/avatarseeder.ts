@@ -50,6 +50,7 @@ export class AvatarSeeder implements OnModuleInit {
         mimetype: 'image/png',
         size: stats.size,
         isTheDefault: true,
+        isCustom: false, //no es de los que me va a hacer marieta
       });
 
       await this.avatarRepository.save(newAvatar);
