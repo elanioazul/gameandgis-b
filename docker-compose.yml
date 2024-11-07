@@ -29,6 +29,7 @@ services:
         - PORT=${NEST_PORT}
     ports:
       - 5002:${NEST_PORT}
+    command: bash -c "npm run build && dumb-init node dist/main.js"
   gameandgis-b-dev:
     container_name: gameandgis-b-api-dev
     restart: unless-stopped
@@ -48,10 +49,12 @@ services:
     ports:
       - 5002:${NEST_PORT}
       - 9229:9229 #debuggin port
-    # volumes:
-    #   - .:/gameandgis-b-app
-    #   - node_modules:/gameandgis-b-app/node_modules/
-    command: npm run start:debug # override entry command
+    volumes:
+      - ./src:/gameandgis-b-app/src  # Volume for live reloading in dev
+      - ./src/assets:/gameandgis-b-app/dist/assets  # Volume for assets folder
+      - /gameandgis-b-app/node_modules # Persist node_modules
+    command: bash -c "npm run build && npm run start:debug"
+
     depends_on:
       - gameandgis-b-postgres
       - gameandgis-b-redis

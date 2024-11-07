@@ -6,6 +6,9 @@
 .idea
 .env
 
+# multer initial storage
+/uploads
+
 # Logs
 logs
 *.log

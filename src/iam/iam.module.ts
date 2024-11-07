@@ -16,14 +16,18 @@ import { Role } from 'src/roles/entities/role.entity';
 import { RolesGuard } from './authorization/guards/roles/roles.guard';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
+import { AvatarsService } from 'src/avatars/avatars.service';
+import { AvatarsModule } from 'src/avatars/avatars.module';
+import { Avatar } from 'src/avatars/entities/avatar.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role]),
+    TypeOrmModule.forFeature([User, Role, Avatar]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     RedisModule,
     UsersModule,
+    AvatarsModule,
   ],
   providers: [
     {
@@ -41,6 +45,7 @@ import { UsersService } from 'src/users/users.service';
     AccessTokenGuard,
     AuthenticationService,
     UsersService,
+    AvatarsService,
   ],
   controllers: [AuthenticationController],
 })

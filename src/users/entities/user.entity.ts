@@ -1,10 +1,13 @@
+import { Avatar } from 'src/avatars/entities/avatar.entity';
 import { RoleRequest } from 'src/roles/entities/role-request.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -29,4 +32,11 @@ export class User {
 
   @OneToMany(() => RoleRequest, (roleRequest) => roleRequest.user)
   roleRequests: RoleRequest[];
+
+  @ManyToOne(() => Avatar, (avatar) => avatar.users)
+  @JoinColumn({ name: 'avatar_id' })
+  avatar: Avatar;
+
+  // @Column({ nullable: true })
+  // avatar_id: number;
 }

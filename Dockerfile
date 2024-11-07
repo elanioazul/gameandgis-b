@@ -1,10 +1,13 @@
+# Base Stage
 FROM node:18-alpine3.16 AS base
 
 ENV DIR /gameandgis-b-app
 WORKDIR $DIR
 
+# Install bash
+RUN apk add --no-cache bash
 
-
+# Development Stage
 FROM base AS dev
 
 ENV NODE_ENV=development
@@ -25,10 +28,10 @@ CMD ["npm", "run", "start:dev"]
 
 
 
-
+# Build Stage
 FROM base AS build
 
-RUN apk update && apk add --no-cache dumb-init
+RUN apk update && apk add --no-cache dumb-init bash
 
 COPY package*.json $DIR
 
@@ -44,9 +47,7 @@ RUN npm run build && \
     npm prune --production
 
 
-
-
-
+# Production Stage
 FROM base AS production
 
 ENV NODE_ENV=production

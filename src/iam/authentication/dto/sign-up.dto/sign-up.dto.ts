@@ -9,4 +9,6 @@ export class SignUpDto {
 
   @MinLength(10)
   password: string;
+
+  //avatarId?: number;
 }
