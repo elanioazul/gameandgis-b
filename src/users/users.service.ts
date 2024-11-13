@@ -15,8 +15,6 @@ import { ResetPasswordDto } from 'src/iam/authentication/dto/reset-password.dto/
 import { HashingService } from 'src/iam/hashing/hashing.service';
 import { Avatar } from 'src/avatars/entities/avatar.entity';
 import { AvatarsService } from 'src/avatars/avatars.service';
-import { ActiveUserData } from 'src/iam/interfaces/active-user-data.interface';
-import { UpdateAvatarDto } from 'src/avatars/dto/update-avatar.dto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -70,7 +68,7 @@ export class UsersService {
 
   async updateUser(
     userEmail: string,
-    updateAvatarDto: UpdateAvatarDto,
+    updateUserDto: UpdateUserDto,
     file?: Express.Multer.File,
   ): Promise<User> {
     const user = await this.userRepository.findOne({
@@ -92,18 +90,29 @@ export class UsersService {
       newAvatar.isCustom = true;
 
       avatar = await this.avatarRepository.save(newAvatar);
-    } else if (updateAvatarDto.avatarId) {
+      user.avatar = avatar;
+    } else if (updateUserDto.avatarId) {
       // Handle selection from predefined avatars
       avatar = await this.avatarRepository.findOne({
-        where: { id: updateAvatarDto.avatarId },
+        where: { id: updateUserDto.avatarId },
       });
       if (!avatar) throw new NotFoundException('Avatar not found');
-    } else {
-      throw new BadRequestException('Either avatarId or file is required');
+      user.avatar = avatar;
     }
 
-    user.avatar = avatar;
-    return this.userRepository.save(user);
+    if (updateUserDto.email) {
+      user.email = updateUserDto.email;
+    }
+    if (updateUserDto.name) {
+      user.name = updateUserDto.name;
+    }
+
+    // Save the user and reload it with the avatar relation
+    await this.userRepository.save(user);
+    return this.userRepository.findOne({
+      where: { id: user.id },
+      relations: ['avatar'],
+    });
   }
 
   async resetPassowrd(email: string, resetPassDto: ResetPasswordDto) {
@@ -121,8 +130,11 @@ export class UsersService {
     await this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    const users = await this.userRepository.find({
+      relations: ['avatar'],
+    });
+    return users;
   }
 
   async findOne(id: number): Promise<User> {

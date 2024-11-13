@@ -19,8 +19,16 @@ import { ResetPasswordDto } from 'src/iam/authentication/dto/reset-password.dto/
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Response, Request } from 'express';
-import { UpdateAvatarDto } from 'src/avatars/dto/update-avatar.dto';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { BadRequest, InternalError } from 'src/shared/decorators';
 @Controller('users')
+@ApiBearerAuth('jwt-auth') // Matches the name in .addBearerAuth()
+@ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -31,6 +39,15 @@ export class UsersController {
   // }
 
   @Post('reset-password')
+  @ApiOperation({
+    summary: 'Reset/change password',
+    description: 'reset/change password',
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  @InternalError('Internal Server Error', 'Internal Server Error Description')
+  @BadRequest('Bad Request Working', 'Bad Request Description')
   resetPassword(
     @ActiveUser() user: ActiveUserData,
     @Body() dto: ResetPasswordDto,
@@ -40,6 +57,15 @@ export class UsersController {
 
   //@Patch(':id/avatar')
   @Put(':id')
+  @ApiOperation({
+    summary: 'Update user details, name, email, avatar..',
+    description: 'update user details',
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  @InternalError('Internal Server Error', 'Internal Server Error Description')
+  @BadRequest('Bad Request Working', 'Bad Request Description')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -55,18 +81,36 @@ export class UsersController {
   async update(
     @Param('id') userId: string,
     @ActiveUser() user: ActiveUserData,
-    @Body() updateAvatarDto: UpdateAvatarDto,
+    @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.usersService.updateUser(user.email, updateAvatarDto, file);
+    return this.usersService.updateUser(user.email, updateUserDto, file);
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'Get all users',
+    description: 'get all user',
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  @InternalError('Internal Server Error', 'Internal Server Error Description')
+  @BadRequest('Bad Request Working', 'Bad Request Description')
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get user details',
+    description: 'get user details',
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  @InternalError('Internal Server Error', 'Internal Server Error Description')
+  @BadRequest('Bad Request Working', 'Bad Request Description')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
