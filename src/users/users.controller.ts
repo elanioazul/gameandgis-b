@@ -19,7 +19,6 @@ import { ResetPasswordDto } from 'src/iam/authentication/dto/reset-password.dto/
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Response, Request } from 'express';
-import { UpdateAvatarDto } from 'src/avatars/dto/update-avatar.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -82,10 +81,10 @@ export class UsersController {
   async update(
     @Param('id') userId: string,
     @ActiveUser() user: ActiveUserData,
-    @Body() updateAvatarDto: UpdateAvatarDto,
+    @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.usersService.updateUser(user.email, updateAvatarDto, file);
+    return this.usersService.updateUser(user.email, updateUserDto, file);
   }
 
   @Get()
