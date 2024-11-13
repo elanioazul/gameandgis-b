@@ -19,25 +19,25 @@ export class RolesService {
     private emailServie: BrevoService,
   ) {}
 
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
-  }
+  // create(createRoleDto: CreateRoleDto) {
+  //   return 'This action adds a new role';
+  // }
 
-  findAll() {
-    return `This action returns all roles`;
-  }
+  // findAll() {
+  //   return `This action returns all roles`;
+  // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
-  }
+  // findOne(id: number) {
+  //   return `This action returns a #${id} role`;
+  // }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
-  }
+  // update(id: number, updateRoleDto: UpdateRoleDto) {
+  //   return `This action updates a #${id} role`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} role`;
+  // }
 
   async requestRoleUpgrade(
     userEmail: string,

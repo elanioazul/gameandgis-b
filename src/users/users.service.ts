@@ -121,8 +121,11 @@ export class UsersService {
     await this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    const users = await this.userRepository.find({
+      relations: ['avatar'],
+    });
+    return users;
   }
 
   async findOne(id: number): Promise<User> {
