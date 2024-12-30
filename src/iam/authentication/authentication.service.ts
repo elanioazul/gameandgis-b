@@ -88,6 +88,12 @@ export class AuthenticationService {
       tokenType: 'Bearer',
       accessToken,
       refreshToken,
+      userDetails: {
+        name: user.name,
+        surnameOne: user.surnameOne,
+        surnameTwo: user.surnameTwo,
+        email: user.email,
+      },
     };
   }
 

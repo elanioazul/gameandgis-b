@@ -157,6 +157,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+    //no muestro password
+    user.password = undefined;
     return user;
   }
 
