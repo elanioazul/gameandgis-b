@@ -89,6 +89,7 @@ export class AuthenticationService {
       accessToken,
       refreshToken,
       userDetails: {
+        id: user.id,
         name: user.name,
         surnameOne: user.surnameOne,
         surnameTwo: user.surnameTwo,
