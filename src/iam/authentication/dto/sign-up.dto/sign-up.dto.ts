@@ -8,6 +8,18 @@ export class SignUpDto {
   name: string;
 
   @ApiProperty({
+    description: 'The first surname of a user',
+  })
+  @IsString()
+  surnameOne: string;
+
+  @ApiProperty({
+    description: 'The second name of a user',
+  })
+  @IsString()
+  surnameTwo: string;
+
+  @ApiProperty({
     description: 'The email of a user',
   })
   @IsEmail()

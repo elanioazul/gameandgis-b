@@ -20,6 +20,12 @@ export class User {
   @Column()
   name: string;
 
+  @Column()
+  surnameOne: string;
+
+  @Column()
+  surnameTwo: string;
+
   @Column({ unique: true })
   email: string;
 

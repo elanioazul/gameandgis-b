@@ -9,6 +9,14 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  surnameOne?: string;
+
+  @IsOptional()
+  @IsString()
+  surnameTwo?: string;
+
+  @IsOptional()
+  @IsString()
   email?: string;
 
   @IsOptional()

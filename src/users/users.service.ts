@@ -28,8 +28,14 @@ export class UsersService {
     private avatarService: AvatarsService,
   ) {}
   async createUser(signUpDto: SignUpDto): Promise<User> {
-    const { name, email, password } = signUpDto;
-    const user = this.userRepository.create({ name, email, password });
+    const { name, surnameOne, surnameTwo, email, password } = signUpDto;
+    const user = this.userRepository.create({
+      name,
+      surnameOne,
+      surnameTwo,
+      email,
+      password,
+    });
 
     const regularRole = await this.roleRepository.findOne({
       where: { name: 'regular' },
@@ -105,6 +111,12 @@ export class UsersService {
     }
     if (updateUserDto.name) {
       user.name = updateUserDto.name;
+    }
+    if (updateUserDto.surnameOne) {
+      user.surnameOne = updateUserDto.surnameOne;
+    }
+    if (updateUserDto.surnameTwo) {
+      user.surnameTwo = updateUserDto.surnameTwo;
     }
 
     // Save the user and reload it with the avatar relation
