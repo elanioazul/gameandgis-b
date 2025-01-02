@@ -14,7 +14,7 @@ import { SignUpDto } from 'src/iam/authentication/dto/sign-up.dto/sign-up.dto';
 import { ResetPasswordDto } from 'src/iam/authentication/dto/reset-password.dto/reset-password.dto';
 import { HashingService } from 'src/iam/hashing/hashing.service';
 import { Avatar } from 'src/avatars/entities/avatar.entity';
-import { AvatarsService } from 'src/avatars/avatars.service';
+import { BrevoService } from 'src/providers/services/transactional-emails/brevo/brevo.service';
 @Injectable()
 export class UsersService {
   constructor(
@@ -25,7 +25,7 @@ export class UsersService {
     @InjectRepository(Avatar)
     private readonly avatarRepository: Repository<Avatar>,
     private readonly hashingService: HashingService,
-    private avatarService: AvatarsService,
+    private emailServie: BrevoService,
   ) {}
   async createUser(signUpDto: SignUpDto): Promise<User> {
     const { name, surnameOne, surnameTwo, email, password } = signUpDto;
@@ -47,7 +47,23 @@ export class UsersService {
     //user.avatar_id = defaultAvatar.id;
     user.avatar = defaultAvatar;
 
+    this.notifyUser(user);
+
     return await this.userRepository.save(user);
+  }
+
+  private async notifyUser(user: User): Promise<void> {
+    try {
+      //send notification email
+      const admin = await this.userRepository.findOne({
+        where: { email: 'hugo2023dev@gmail.com' }, //habría que buscar tbn por user que tenga role=3(admin)
+      });
+      if (admin) {
+        this.emailServie.notifyUserSignUpSucceded(user, admin);
+      } else {
+        console.log('no admin was found when notifying user signup process');
+      }
+    } catch (error) {}
   }
 
   // async updateUserNoCustomAvatar(

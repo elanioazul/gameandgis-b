@@ -9,7 +9,7 @@ import { BcryptService } from 'src/iam/hashing/bcrypt.service';
 import { Avatar } from 'src/avatars/entities/avatar.entity';
 import { AvatarsService } from 'src/avatars/avatars.service';
 import { AvatarsModule } from 'src/avatars/avatars.module';
-
+import { BrevoService } from 'src/providers/services/transactional-emails/brevo/brevo.service';
 @Module({
   imports: [TypeOrmModule.forFeature([User, Role, Avatar]), AvatarsModule],
   controllers: [UsersController],
@@ -20,6 +20,7 @@ import { AvatarsModule } from 'src/avatars/avatars.module';
     },
     UsersService,
     AvatarsService,
+    BrevoService,
   ],
 })
 export class UsersModule {}

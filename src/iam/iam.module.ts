@@ -19,7 +19,7 @@ import { UsersService } from 'src/users/users.service';
 import { AvatarsService } from 'src/avatars/avatars.service';
 import { AvatarsModule } from 'src/avatars/avatars.module';
 import { Avatar } from 'src/avatars/entities/avatar.entity';
-
+import { BrevoService } from 'src/providers/services/transactional-emails/brevo/brevo.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role, Avatar]),
@@ -46,6 +46,7 @@ import { Avatar } from 'src/avatars/entities/avatar.entity';
     AuthenticationService,
     UsersService,
     AvatarsService,
+    BrevoService,
   ],
   controllers: [AuthenticationController],
 })
