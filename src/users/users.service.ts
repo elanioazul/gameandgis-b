@@ -42,7 +42,7 @@ export class UsersService {
     });
     user.roles = [regularRole];
     const defaultAvatar = await this.avatarRepository.findOne({
-      where: [{ isTheDefault: true }, { isCustom: false }],
+      where: [{ isTheDefault: true }, { uploadedByUser: false }],
     });
     //user.avatar_id = defaultAvatar.id;
     user.avatar = defaultAvatar;
@@ -89,13 +89,14 @@ export class UsersService {
   // }
 
   async updateUser(
-    userEmail: string,
+    id: number,
     updateUserDto: UpdateUserDto,
     file?: Express.Multer.File,
   ): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { email: userEmail },
+      where: { id: id },
     });
+
     if (!user) throw new NotFoundException('User not found');
 
     let avatar: Avatar;
@@ -109,7 +110,7 @@ export class UsersService {
       newAvatar.mimetype = file.mimetype;
       newAvatar.size = file.size;
       newAvatar.isTheDefault = false;
-      newAvatar.isCustom = true;
+      newAvatar.uploadedByUser = true;
 
       avatar = await this.avatarRepository.save(newAvatar);
       user.avatar = avatar;
@@ -119,6 +120,7 @@ export class UsersService {
         where: { id: updateUserDto.avatarId },
       });
       if (!avatar) throw new NotFoundException('Avatar not found');
+      avatar.uploadedByUser = false;
       user.avatar = avatar;
     }
 
@@ -184,7 +186,7 @@ export class UsersService {
         path: user.avatar.path,
         mimetype: undefined,
         size: undefined,
-        isCustom: undefined,
+        uploadedByUser: undefined,
         isTheDefault: undefined,
         users: undefined,
         createdTimeStampWithTimeZone: undefined
