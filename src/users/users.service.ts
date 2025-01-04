@@ -175,6 +175,22 @@ export class UsersService {
     }
     //no muestro password
     user.password = undefined;
+    // filter avatar properties
+    if (user.avatar) {
+      user.avatar = {
+        id: user.avatar.id,
+        originalname: user.avatar.originalname,
+        filename: user.avatar.filename,
+        path: user.avatar.path,
+        mimetype: undefined,
+        size: undefined,
+        isCustom: undefined,
+        isTheDefault: undefined,
+        users: undefined,
+        createdTimeStampWithTimeZone: undefined
+      };
+    }
+
     return user;
   }
 
