@@ -102,7 +102,7 @@ export class UsersService {
     let avatar: Avatar;
 
     if (file) {
-      // Handle custom avatar upload
+      // Handle uploadedByUser avatar upload
       const newAvatar = new Avatar();
       newAvatar.originalname = file.originalname;
       newAvatar.filename = file.filename;
@@ -115,7 +115,7 @@ export class UsersService {
       avatar = await this.avatarRepository.save(newAvatar);
       user.avatar = avatar;
     } else if (updateUserDto.avatarId) {
-      // Handle selection from predefined avatars
+      // Handle selection from predefined avatars (marieta)
       avatar = await this.avatarRepository.findOne({
         where: { id: updateUserDto.avatarId },
       });
@@ -139,10 +139,29 @@ export class UsersService {
 
     // Save the user and reload it with the avatar relation
     await this.userRepository.save(user);
-    return this.userRepository.findOne({
-      where: { id: user.id },
+    const updatedUser = await this.userRepository.findOne({
+      where: { id },
       relations: ['avatar'],
     });
+    //no muestro password
+    updatedUser.password = undefined;
+    // filter avatar properties
+    if (updatedUser.avatar) {
+      updatedUser.avatar = {
+        id: updatedUser.avatar.id,
+        originalname: updatedUser.avatar.originalname,
+        filename: updatedUser.avatar.filename,
+        path: updatedUser.avatar.path,
+        mimetype: undefined,
+        size: undefined,
+        uploadedByUser: undefined,
+        isTheDefault: undefined,
+        users: undefined,
+        createdTimeStampWithTimeZone: undefined,
+      };
+    }
+
+    return updatedUser;
   }
 
   async resetPassowrd(email: string, resetPassDto: ResetPasswordDto) {
@@ -189,7 +208,7 @@ export class UsersService {
         uploadedByUser: undefined,
         isTheDefault: undefined,
         users: undefined,
-        createdTimeStampWithTimeZone: undefined
+        createdTimeStampWithTimeZone: undefined,
       };
     }
 
