@@ -10,7 +10,8 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { RolesModule } from './roles/roles.module';
 import { ProvidersModule } from './providers/providers.module';
 import { AvatarsModule } from './avatars/avatars.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -33,6 +34,10 @@ import { AvatarsModule } from './avatars/avatars.module';
     RolesModule,
     ProvidersModule,
     AvatarsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads/avatars'), // Specify the root path for static files
+      serveRoot: '/uploads/avatars', // Specify the route prefix
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
