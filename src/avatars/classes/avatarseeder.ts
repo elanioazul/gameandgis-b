@@ -21,14 +21,15 @@ export class AvatarSeeder implements OnModuleInit {
       __dirname,
       '..',
       '..',
-      'assets',
+      '..',
+      'uploads',
       'avatars',
       'default_avatar.png',
     );
 
     // console.log('Current __dirname:', __dirname);
 
-    // console.log('Resolved path:', defaultAvatarPath);
+    // console.log('defaultAvatarPath is:', defaultAvatarPath);
 
     // Check if the file exists at the resolved path
     if (!fs.existsSync(defaultAvatarPath)) {
@@ -46,7 +47,7 @@ export class AvatarSeeder implements OnModuleInit {
       const newAvatar = this.avatarRepository.create({
         originalname: 'default_avatar.png',
         filename: 'default_avatar.png',
-        path: defaultAvatarPath,
+        path: 'uploads/avatars/default_avatar.png',
         mimetype: 'image/png',
         size: stats.size,
         isTheDefault: true,
