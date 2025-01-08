@@ -42,7 +42,7 @@ export class UsersService {
     });
     user.roles = [regularRole];
     const defaultAvatar = await this.avatarRepository.findOne({
-      where: [{ isTheDefault: true }, { isCustom: false }],
+      where: [{ isTheDefault: true }, { uploadedByUser: false }],
     });
     //user.avatar_id = defaultAvatar.id;
     user.avatar = defaultAvatar;
@@ -89,19 +89,20 @@ export class UsersService {
   // }
 
   async updateUser(
-    userEmail: string,
+    id: number,
     updateUserDto: UpdateUserDto,
     file?: Express.Multer.File,
   ): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { email: userEmail },
+      where: { id: id },
     });
+
     if (!user) throw new NotFoundException('User not found');
 
     let avatar: Avatar;
 
     if (file) {
-      // Handle custom avatar upload
+      // Handle uploadedByUser avatar upload
       const newAvatar = new Avatar();
       newAvatar.originalname = file.originalname;
       newAvatar.filename = file.filename;
@@ -109,16 +110,17 @@ export class UsersService {
       newAvatar.mimetype = file.mimetype;
       newAvatar.size = file.size;
       newAvatar.isTheDefault = false;
-      newAvatar.isCustom = true;
+      newAvatar.uploadedByUser = true;
 
       avatar = await this.avatarRepository.save(newAvatar);
       user.avatar = avatar;
     } else if (updateUserDto.avatarId) {
-      // Handle selection from predefined avatars
+      // Handle selection from predefined avatars (marieta)
       avatar = await this.avatarRepository.findOne({
         where: { id: updateUserDto.avatarId },
       });
       if (!avatar) throw new NotFoundException('Avatar not found');
+      avatar.uploadedByUser = false;
       user.avatar = avatar;
     }
 
@@ -137,10 +139,29 @@ export class UsersService {
 
     // Save the user and reload it with the avatar relation
     await this.userRepository.save(user);
-    return this.userRepository.findOne({
-      where: { id: user.id },
+    const updatedUser = await this.userRepository.findOne({
+      where: { id },
       relations: ['avatar'],
     });
+    //no muestro password
+    updatedUser.password = undefined;
+    // filter avatar properties
+    if (updatedUser.avatar) {
+      updatedUser.avatar = {
+        id: updatedUser.avatar.id,
+        originalname: updatedUser.avatar.originalname,
+        filename: updatedUser.avatar.filename,
+        path: updatedUser.avatar.path,
+        mimetype: undefined,
+        size: undefined,
+        uploadedByUser: undefined,
+        isTheDefault: undefined,
+        users: undefined,
+        createdTimeStampWithTimeZone: undefined,
+      };
+    }
+
+    return updatedUser;
   }
 
   async resetPassowrd(email: string, resetPassDto: ResetPasswordDto) {
@@ -175,6 +196,22 @@ export class UsersService {
     }
     //no muestro password
     user.password = undefined;
+    // filter avatar properties
+    if (user.avatar) {
+      user.avatar = {
+        id: user.avatar.id,
+        originalname: user.avatar.originalname,
+        filename: user.avatar.filename,
+        path: user.avatar.path,
+        mimetype: undefined,
+        size: undefined,
+        uploadedByUser: undefined,
+        isTheDefault: undefined,
+        users: undefined,
+        createdTimeStampWithTimeZone: undefined,
+      };
+    }
+
     return user;
   }
 

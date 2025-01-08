@@ -5,3 +5,4 @@
 !/tsconfig.build.json
 !/tsconfig.json
 !/src
+!/copy-default-avatar.js

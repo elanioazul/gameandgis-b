@@ -52,8 +52,9 @@ services:
     volumes:
       - ./src:/gameandgis-b-app/src  # Volume for live reloading in dev
       - ./src/assets:/gameandgis-b-app/dist/assets  # Volume for assets folder
-      - /gameandgis-b-app/node_modules # Persist node_modules
-    command: bash -c "npm run build && npm run start:debug"
+      #- /gameandgis-b-app/node_modules # Persist node_modules
+      - uploaded-avatars-vol:/gameandgis-b-app/uploads/avatars # Avatars uploaded in profile template
+    command: bash -c "npm run build-and-copy && npm run start:debug"
 
     depends_on:
       - gameandgis-b-postgres
@@ -65,3 +66,4 @@ volumes:
   #node_modules: null
   pg-vol:
     driver: local
+  uploaded-avatars-vol: null

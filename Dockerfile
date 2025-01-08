@@ -21,6 +21,7 @@ RUN npm install
 
 COPY tsconfig*.json $DIR
 COPY src $DIR/src
+COPY copy-default-avatar.js ./
 
 EXPOSE $PORT
 CMD ["npm", "run", "start:dev"]
@@ -42,8 +43,9 @@ RUN npm ci
 
 COPY tsconfig*.json $DIR
 COPY src $DIR/src
+COPY copy-default-avatar.js ./
 
-RUN npm run build && \
+RUN npm run build-and-copy  && \
     npm prune --production
 
 

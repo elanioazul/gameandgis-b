@@ -67,7 +67,7 @@ export class UsersController {
   @InternalError('Internal Server Error', 'Internal Server Error Description')
   @BadRequest('Bad Request Working', 'Bad Request Description')
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor('avatar', {
       storage: diskStorage({
         destination: './uploads/avatars',
         filename: (req, file, callback) => {
@@ -80,11 +80,10 @@ export class UsersController {
   )
   async update(
     @Param('id') userId: string,
-    @ActiveUser() user: ActiveUserData,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.usersService.updateUser(user.email, updateUserDto, file);
+    return this.usersService.updateUser(Number(userId), updateUserDto, file);
   }
 
   @Get()
