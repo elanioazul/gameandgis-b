@@ -2,14 +2,14 @@ version: "3.8"
 services:
   gameandgis-b-redis:
     image: redis
-    container_name: gameandgis-b-redis
+    container_name: gameandgis-b-api-redis
     restart: always
     env_file: .env
     ports:
       - "6380:${REDIS_PORT}"
   gameandgis-b-postgres:
     image: postgres:latest
-    container_name: gameandgis-b-postgres
+    container_name: gameandgis-b-api-postgres
     restart: always
     env_file: .env
     environment:
@@ -31,7 +31,7 @@ services:
       - 5002:${NEST_PORT}
     command: bash -c "npm run build && dumb-init node dist/main.js"
   gameandgis-b-dev:
-    container_name: gameandgis-b-api-dev
+    container_name: gameandgis-b-api
     restart: unless-stopped
     env_file: .env
     environment:
@@ -59,11 +59,82 @@ services:
     depends_on:
       - gameandgis-b-postgres
       - gameandgis-b-redis
+      - gameandgis-b-geoserver-db
+      - gameandgis-b-geoserver
     links:
       - gameandgis-b-postgres
       - gameandgis-b-redis
+  gameandgis-b-geoserver-db:
+    image: kartoza/postgis:${POSTGIS_VERSION_TAG}
+    container_name: geoserver-postgis
+    restart: on-failure
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      ALLOW_IP_RANGE: ${ALLOW_IP_RANGE}
+      # FORCE_SSL: TRUE
+      # SSL_MODE: allow
+    ports:
+      - 5433:${DB_PORT}
+    volumes:
+      - geo-db-data:/var/lib/postgresql
+      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+    networks:
+      - gameandgis-network
+    healthcheck:
+      test: "PGPASSWORD=${DB_PASSWORD} pg_isready -h 127.0.0.1 -U ${DB_USER} -d ${DB_NAME}"
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+  gameandgis-b-geoserver:
+    image: kartoza/geoserver:${GS_VERSION}
+    container_name: geoserver
+    volumes:
+      - geoserver-data:/opt/geoserver/data_dir
+    ports:
+       - 8080:8080
+    restart: on-failure
+    networks:
+      - gameandgis-network
+    env_file: .env
+    environment:
+      GEOSERVER_DATA_DIR: '/opt/geoserver/data_dir'
+      GEOWEBCACHE_CACHE_DIR: '/opt/geoserver/data_dir/gwc'
+      GEOSERVER_ADMIN_PASSWORD: 'geoserver'
+      GEOSERVER_ADMIN_USER: 'admin'
+      INITIAL_MEMORY: '2G'
+      MAXIMUM_MEMORY: '4G'
+      STABLE_EXTENSIONS: 'css-plugin,vectortiles-plugin'
+      COMMUNITY_EXTENSIONS: 'cog-plugin'
+      GEOSERVER_CONTEXT_ROOT: 'geoserver'
+      SAMPLE_DATA: True
+      DB_BACKEND: POSTGRES               
+      HOST: gameandgis-b-geoserver-db                          
+      POSTGRES_PORT: 5432             
+      POSTGRES_DB: ${DB_NAME}                  
+      POSTGRES_USER: ${DB_USER}    
+      POSTGRES_PASS: ${DB_PASSWORD}  
+      # SSL_MODE: allow                    
+      POSTGRES_SCHEMA: public           
+      DISK_QUOTA_SIZE: 5 
+    depends_on:
+      gameandgis-b-geoserver-db:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null -u admin:'geoserver' http://localhost:8080/geoserver/rest/about/version.xml"
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
 volumes:
   #node_modules: null
   pg-vol:
     driver: local
   uploaded-avatars-vol: null
+  geoserver-data: {}
+  geo-db-data:
+networks:
+  gameandgis-network:
+    driver: bridge
